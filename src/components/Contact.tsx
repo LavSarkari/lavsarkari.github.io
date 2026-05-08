@@ -5,7 +5,6 @@ import { Mail, MessageCircle, Github, Linkedin, ExternalLink } from 'lucide-reac
 import { portfolioConfig } from '@/config/portfolio'
 import ContactForm from './ContactForm'
 
-// Icon mapping for dynamic contact icons
 const iconMap = {
   github: Github,
   twitter: MessageCircle,
@@ -16,71 +15,45 @@ const iconMap = {
 export default function Contact() {
   const { contact } = portfolioConfig
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 100
-      }
-    }
-  }
-
   return (
-    <section id="contact" className="section-padding bg-gray-50 dark:bg-zinc-800/50">
-      <div className="max-w-4xl mx-auto">
-        <motion.h2 
-          className="text-4xl font-bold text-center mb-8"
-          initial={{ opacity: 0, y: 20 }}
+    <section id="contact" className="relative py-32 overflow-hidden bg-black">
+      <div className="max-w-4xl mx-auto px-6 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
+          className="text-center mb-16"
         >
-          {contact.title}
-        </motion.h2>
-
-        <motion.p 
-          className="text-center text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          {contact.description}
-        </motion.p>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-6">
+            <span className="text-xs text-zinc-300 font-medium tracking-widest uppercase">
+              Contact
+            </span>
+          </div>
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">
+            Let's Connect
+          </h2>
+          <p className="text-lg md:text-xl text-zinc-400 font-light leading-relaxed max-w-2xl mx-auto">
+            {contact.description}
+          </p>
+        </motion.div>
 
         {contact.form.enabled && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mb-16"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            className="mb-24"
           >
-            <ContactForm />
+            <div className="bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-3xl p-8 md:p-12">
+              <ContactForm />
+            </div>
           </motion.div>
         )}
 
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          {contact.methods.map((method) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-24">
+          {contact.methods.map((method, index) => {
             const Icon = iconMap[method.icon as keyof typeof iconMap] || Mail
             return (
               <motion.a
@@ -88,65 +61,70 @@ export default function Contact() {
                 href={method.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="card p-6 group cursor-pointer block"
-                variants={itemVariants}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.8, delay: 0.4 + index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                className="group relative block"
                 whileHover={{ y: -5 }}
               >
-                <div className="flex items-start gap-4">
-                  <div className={`${method.color} p-3 rounded-lg group-hover:scale-110 transition-transform`}>
-                    <Icon className="text-white" size={24} />
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="text-xl font-semibold group-hover:text-blue-500 transition-colors">
-                        {method.name}
-                      </h3>
-                      <ExternalLink 
-                        size={16} 
-                        className="text-gray-400 group-hover:text-blue-500 transition-colors opacity-0 group-hover:opacity-100" 
-                      />
+                <div className="relative p-8 bg-zinc-900/30 border border-white/5 rounded-3xl backdrop-blur-sm group-hover:bg-zinc-800/40 transition-colors duration-500">
+                  <div className="flex items-start gap-6">
+                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10 text-zinc-400 group-hover:text-white group-hover:bg-white/10 transition-colors duration-300">
+                      <Icon size={24} />
                     </div>
                     
-                    <p className="text-blue-600 dark:text-blue-400 font-medium mb-2">
-                      {method.value}
-                    </p>
-                    
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">
-                      {method.description}
-                    </p>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-xl font-medium text-white transition-colors">
+                          {method.name}
+                        </h3>
+                        <ExternalLink 
+                          size={16} 
+                          className="text-zinc-600 group-hover:text-white transition-colors opacity-0 group-hover:opacity-100 transform -translate-y-1 translate-x-1 group-hover:translate-y-0 group-hover:translate-x-0 duration-300" 
+                        />
+                      </div>
+                      
+                      <p className="text-blue-400 font-medium tracking-wide mb-3">
+                        {method.value}
+                      </p>
+                      
+                      <p className="text-zinc-500 font-light leading-relaxed">
+                        {method.description}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </motion.a>
             )
           })}
-        </motion.div>
+        </div>
 
         <motion.div 
-          className="text-center mt-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          className="text-center"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-white font-medium">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          <div className="inline-flex items-center gap-3 px-8 py-4 bg-zinc-900/50 backdrop-blur-md border border-white/10 rounded-full text-zinc-300 font-medium text-sm tracking-wide">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_10px_#4ade80]"></div>
             {contact.availability}
           </div>
         </motion.div>
 
         <motion.div 
-          className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700 text-center"
+          className="mt-32 pt-8 border-t border-zinc-900 text-center flex flex-col items-center gap-2"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 1, delay: 0.8 }}
         >
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Built with Next.js, Tailwind CSS, Framer Motion & Three.js
+          <p className="text-sm text-zinc-600 font-light tracking-wide">
+            Designed & Built minimal.
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-500">
-            © 2024 Lav Sarkari. All rights reserved.
+          <p className="text-sm text-zinc-600 font-light tracking-wide">
+            © {new Date().getFullYear()} Lav Sarkari
           </p>
         </motion.div>
       </div>

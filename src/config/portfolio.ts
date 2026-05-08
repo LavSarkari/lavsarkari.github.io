@@ -179,7 +179,9 @@ export const portfolioConfig = {
   navigation: {
     logo: "LavSarkari",
     blogName: "LavLeaks", // Your blog name
-    blogUrl: "https://leaks.lavsarkari.me"
+    blogUrl: "https://leaks.lavsarkari.me",
+    bytesName: "LavBytes",
+    bytesUrl: "https://lavbytes.in"
   },
 
   // SEO and Metadata

@@ -36,10 +36,9 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setStatus({ type: 'loading', message: 'Sending your message...' })
+    setStatus({ type: 'loading', message: 'Initiating...' })
 
     try {
-      // Using Formspree - no backend required!
       const response = await fetch(contact.form.actionUrl, {
         method: 'POST',
         headers: {
@@ -52,24 +51,24 @@ export default function ContactForm() {
           subject: formData.subject,
           message: formData.message,
           _replyto: formData.email,
-          _subject: `New message from ${formData.name}: ${formData.subject}`,
-          _gotcha: "" // Honeypot field
+          _subject: `Transmission from ${formData.name}: ${formData.subject}`,
+          _gotcha: ""
         })
       })
 
       if (response.ok) {
         setStatus({ 
           type: 'success', 
-          message: 'Message sent successfully! I\'ll get back to you soon.' 
+          message: 'Transmission secured. Standing by.' 
         })
         setFormData({ name: '', email: '', subject: '', message: '' })
       } else {
-        throw new Error('Failed to send message')
+        throw new Error('Transmission failure')
       }
     } catch (error) {
       setStatus({ 
         type: 'error', 
-        message: 'Failed to send message. Please try again or contact me directly.' 
+        message: 'Signal lost. Please try alternative channels.' 
       })
     }
   }
@@ -77,154 +76,139 @@ export default function ContactForm() {
   if (!contact.form.enabled) return null
 
   return (
-    <motion.div
-      className="max-w-2xl mx-auto mt-16"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="card p-8">
-        <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold mb-2">{contact.form.title}</h3>
-          <p className="text-gray-600 dark:text-gray-400">{contact.form.subtitle}</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Name *
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
-                placeholder="Your name"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Email *
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
-                placeholder="your.email@example.com"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="subject" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Subject *
-            </label>
-            <input
-              type="text"
-              id="subject"
-              name="subject"
-              value={formData.subject}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
-              placeholder="What's this about?"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="message" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Message *
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              required
-              rows={5}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 resize-none"
-              placeholder="Tell me about your project, question, or just say hi!"
-            />
-          </div>
-
-          {/* Honeypot field */}
-          <div style={{ display: 'none' }}>
-            <label htmlFor="_gotcha">Leave this field empty if you're human:</label>
-            <input
-              type="text"
-              name="_gotcha"
-              id="_gotcha"
-              tabIndex={-1}
-              autoComplete="off"
-            />
-          </div>
-
-          {/* Status Message */}
-          {status.type !== 'idle' && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`flex items-center gap-2 p-4 rounded-lg ${
-                status.type === 'success' 
-                  ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                  : status.type === 'error'
-                  ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
-                  : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
-              }`}
-            >
-              {status.type === 'success' && <CheckCircle size={20} />}
-              {status.type === 'error' && <AlertCircle size={20} />}
-              {status.type === 'loading' && (
-                <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              )}
-              <span className="text-sm font-medium">{status.message}</span>
-            </motion.div>
-          )}
-
-          {/* Submit Button */}
-          <motion.button
-            type="submit"
-            disabled={status.type === 'loading'}
-            className="w-full btn-primary inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            whileHover={{ scale: status.type === 'loading' ? 1 : 1.02 }}
-            whileTap={{ scale: status.type === 'loading' ? 1 : 0.98 }}
-          >
-            {status.type === 'loading' ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Sending...
-              </>
-            ) : (
-              <>
-                <Send size={18} />
-                Send Message
-              </>
-            )}
-          </motion.button>
-        </form>
-
-        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-            Or reach out directly at{' '}
-            <a 
-              href={`mailto:${contact.form.emailTo}`}
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            >
-              {contact.form.emailTo}
-            </a>
-          </p>
-        </div>
+    <div className="w-full">
+      <div className="text-center mb-10">
+        <h3 className="text-2xl font-bold mb-3 text-white tracking-tight">{contact.form.title}</h3>
+        <p className="text-zinc-400 font-light">{contact.form.subtitle}</p>
       </div>
-    </motion.div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium mb-2 text-zinc-400">
+              Designation
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="w-full px-5 py-4 rounded-2xl border border-white/10 bg-zinc-900/50 text-white placeholder-zinc-600 focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all duration-300 font-light"
+              placeholder="Identifier"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium mb-2 text-zinc-400">
+              Comms Link
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full px-5 py-4 rounded-2xl border border-white/10 bg-zinc-900/50 text-white placeholder-zinc-600 focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all duration-300 font-light"
+              placeholder="address@domain.com"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="subject" className="block text-sm font-medium mb-2 text-zinc-400">
+            Directive
+          </label>
+          <input
+            type="text"
+            id="subject"
+            name="subject"
+            value={formData.subject}
+            onChange={handleChange}
+            required
+            className="w-full px-5 py-4 rounded-2xl border border-white/10 bg-zinc-900/50 text-white placeholder-zinc-600 focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all duration-300 font-light"
+            placeholder="Topic of inquiry"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="message" className="block text-sm font-medium mb-2 text-zinc-400">
+            Payload
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            required
+            rows={5}
+            className="w-full px-5 py-4 rounded-2xl border border-white/10 bg-zinc-900/50 text-white placeholder-zinc-600 focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all duration-300 resize-none font-light"
+            placeholder="Enter transmission data..."
+          />
+        </div>
+
+        {/* Honeypot field */}
+        <div style={{ display: 'none' }}>
+          <label htmlFor="_gotcha">Leave this empty:</label>
+          <input type="text" name="_gotcha" id="_gotcha" tabIndex={-1} autoComplete="off" />
+        </div>
+
+        {/* Status Message */}
+        {status.type !== 'idle' && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`flex items-center gap-3 p-4 rounded-2xl border ${
+              status.type === 'success' 
+                ? 'bg-green-500/10 border-green-500/20 text-green-400'
+                : status.type === 'error'
+                ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+            }`}
+          >
+            {status.type === 'success' && <CheckCircle size={18} />}
+            {status.type === 'error' && <AlertCircle size={18} />}
+            {status.type === 'loading' && (
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            )}
+            <span className="text-sm font-medium tracking-wide">{status.message}</span>
+          </motion.div>
+        )}
+
+        {/* Submit Button */}
+        <motion.button
+          type="submit"
+          disabled={status.type === 'loading'}
+          className="w-full py-4 rounded-2xl bg-white text-black font-semibold tracking-wide flex items-center justify-center gap-2 hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          whileTap={{ scale: status.type === 'loading' ? 1 : 0.98 }}
+        >
+          {status.type === 'loading' ? (
+            <>
+              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              Processing...
+            </>
+          ) : (
+            <>
+              Execute
+              <Send size={16} />
+            </>
+          )}
+        </motion.button>
+      </form>
+
+      <div className="mt-10 pt-8 border-t border-white/5">
+        <p className="text-center text-sm text-zinc-500 font-light tracking-wide">
+          Direct Line:{' '}
+          <a 
+            href={`mailto:${contact.form.emailTo}`}
+            className="text-white hover:text-blue-400 transition-colors"
+          >
+            {contact.form.emailTo}
+          </a>
+        </p>
+      </div>
+    </div>
   )
 }
